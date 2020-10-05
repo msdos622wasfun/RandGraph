@@ -11,6 +11,6 @@ It will then display the results at the end, or even in real-time if so desired 
 
 The app uses console mode.  There's one annoying thing I couldn't fix: I wasn't able to disable the cursor (you'll see what I mean).
 
-Although one of the features of Aurora is that it supposedly can access the Windows API, I did not find anything about that in the documentation, and there are no built-in cursor functions.
+Although one of the features of Aurora is that it supposedly can access the Windows API, I did not find anything about that in the documentation, and there is no built-in function to turn the cursor off.
 
 Also keep in mind one thing: if you type in the maximum number of random numbers possible, be prepared to wait a long time.  (You can always abort.)
