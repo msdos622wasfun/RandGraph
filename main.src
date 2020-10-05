@@ -1,0 +1,211 @@
+/*
+
+	RandGraph v1.00
+	Random Number Distribution Graph program
+	Copyleft 2020 by Erich Kohl
+	
+*/
+
+#autodefine "off"
+
+global sub main()
+{
+	init();
+	primary_loop();
+	wrap_up();
+}
+
+sub draw_box(unsigned byte col1, unsigned byte row1, unsigned byte col2, unsigned byte row2)
+{
+	int row;
+	
+	for(row = row1; row <= row2; row++)
+	{
+		locate(row, col1);
+		writeln(strspace(col2 - col1 + 1));
+	}
+}
+
+sub init()
+{
+	setconsoletitle("RandGraph");
+	consolecolor(7, 1);
+	cls();
+	consolecolor(7, 3);
+	draw_box(3, 2, 118, 6);
+	consolecolor(0, 3);
+	print_center(1, 120, 3, "RandGraph v1.00");
+	print_center(1, 120, 4, "Random Number Distribution Graph Program");
+	print_center(1, 120, 5, "Copyleft 2020 by Erich Kohl");
+}
+
+sub primary_loop()
+{
+	unsigned int num[10];
+	unsigned int cycles;
+	unsigned byte displayPref;
+	string s, c;
+	unsigned byte cursorPos;
+	int a;
+	unsigned int b;
+	unsigned int randomNumber;
+	unsigned byte barLength;
+
+	do
+	{
+		consolecolor(7, 3);
+		draw_box(3, 24, 118, 29);
+		consolecolor(15, 3);
+		print_center(1, 120, 25, "Please enter the number of cycles using the numbers 0 - 9.");
+		print_center(1, 120, 26, "Press Esc to clear and start over.  Press Enter when done.");
+		
+		consolecolor(14, 0);
+		s = "";
+		cursorPos = 1;
+		print_center(1, 120, 28, s + strspace(10 - cursorPos));
+		
+		do
+		{
+			c = getkey();
+			if(strfind("1234567890", c) && cursorPos < 10)
+			{
+				s += c;
+				cursorPos++;
+				print_center(1, 120, 28, s + strspace(10 - cursorPos));
+			}
+			if(toascii(c) == 27)
+			{
+				s = "";
+				cursorPos = 1;
+				print_center(1, 120, 28, s + strspace(10 - cursorPos));
+			}	
+		}
+		until(toascii(c) == 13 && strtonum(s) != 0);
+		
+		cycles = strtonum(s);
+		
+		consolecolor(7, 3);
+		draw_box(3, 24, 118, 29);
+		consolecolor(15, 3);
+		print_center(1, 120, 25, "Please choose from the following two options:");
+		print_center(1, 120, 27, "1. Display progress in real-time");
+		print_center(1, 120, 28, "2. Display only final results   ");
+		
+		do
+		{
+			c = getkey();
+		}
+		until(c == "1" || c == "2");
+		
+		displayPref = strtonum(c);
+		
+		consolecolor(7, 3);
+		draw_box(3, 24, 118, 29);
+		consolecolor(15, 3);
+		print_center(1, 120, 26, "Processing.");
+		print_center(1, 120, 27, "Press 'Q' to abort.");
+	
+		for(a = 1; a <= 10; a++)
+		{
+			num[a] = 0;
+		}
+		
+		if(displayPref == 1)
+		{
+			consolecolor(7, 0);
+			draw_box(3, 8, 118, 21);
+			for(a = 1; a <= 10; a++)
+			{
+				consolecolor(a, 0);
+				locate(a + 8, 4);
+				writeln(using("##:", a));
+				locate(a + 8, 109);
+				writeln(using("#########", 0));
+			}
+			consolecolor(14, 0);
+			locate(20, 4);
+			writeln("TOTAL:");
+			for(b = 1; b <= cycles; b++)
+			{
+				randomNumber = rand(1, 10);
+				num[randomNumber]++;
+				consolecolor(randomNumber, 0);
+				locate(randomNumber + 8, 8);
+				barLength = num[randomNumber] / (cycles / 100f);
+				writeln(strrpt(barLength, 42));
+				locate(randomNumber + 8, 109);
+				writeln(using("#########", num[randomNumber]));
+				consolecolor(14, 0);
+				locate(20, 109);
+				writeln(using("#########", b));
+				if(getkeystate(0x51))
+				{
+					consolecolor(7, 1);
+					draw_box(3, 8, 118, 21);
+					break;
+				}
+			}
+		}
+		else
+		{
+			for(b = 1; b <= cycles; b++)
+			{
+				randomNumber = rand(1, 10);
+				num[randomNumber]++;
+				if(getkeystate(0x51)) break;
+			}
+			if(b == cycles + 1)
+			{
+				consolecolor(7, 0);
+				draw_box(3, 8, 118, 21);
+				for(a = 1; a <= 10; a++)
+				{
+					consolecolor(a, 0);
+					locate(a + 8, 4);
+					writeln(using("##:", a));
+					locate(a + 8, 8);
+					barLength = num[a] / (cycles / 100f);
+					writeln(strrpt(barLength, 42));
+					locate(a + 8, 109);
+					writeln(using("#########", num[a]));
+				}
+				consolecolor(14, 0);
+				locate(20, 4);
+				writeln("TOTAL:");
+				locate(20, 109);
+				writeln(using("#########", cycles));
+			}
+		}
+	
+		consolecolor(7, 3);
+		draw_box(3, 24, 118, 29);
+		consolecolor(15, 3);
+		print_center(1, 120, 26, "Press Enter to perform another run.");
+		print_center(1, 120, 27, "Press Esc to quit.");
+		
+		do
+		{
+			c = getkey();
+		}
+		until(toascii(c) == 13 || toascii(c) == 27);
+	
+		if(toascii(c) == 13)
+		{
+			consolecolor(7, 1);
+			draw_box(3, 8, 118, 21);
+		}
+	}
+	until(toascii(c) == 27);
+}
+
+sub print_center(unsigned byte col1, unsigned byte col2, unsigned byte row, string s)
+{
+	locate(row, floor((col1 + col2) / 2) - floor(len(s) / 2));
+	writeln(s);
+}
+
+sub wrap_up()
+{
+	consolecolor(7, 0);
+	cls();	
+}
